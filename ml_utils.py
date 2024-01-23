@@ -37,6 +37,28 @@ class edaDF:
         catlist : list
             The list of column names that are categorical
 
+    setTarget(target)
+        sets the target variable to the name provided in the argument
+        
+        Parameters
+        ----------
+        target : string
+            The name of the taregt variable
+
+    info()
+        uses the info() method of the pandas library to give the basic info about the dataset
+        
+        Parameters
+        ----------
+        there are no parameters other than the class instance itself
+
+    stats()
+        uses the describe() method of the pandas library to give basic statistical information about the numerical variables of the dataset
+        
+        Parameters
+        ----------
+        there are no parameters other than the class instance itself
+
     setNum(numList)
         sets the cat variable listing the categorical column names to the list provided in the argument catList
         
@@ -56,12 +78,12 @@ class edaDF:
             If true, display the graphs when the function is called. Otherwise the figure is returned.
     
     histPlots(self, splitTarg=False, show=True)
-        generates countplots for the categorical variables in the dataset 
+        generates histograms for the categorical variables in the dataset 
 
         Parameters
         ----------
         splitTarg : bool
-            If true, use the hue function in the countplot to split the data by the target value
+            If true, use the hue function in the histogram to split the data by the target value
         show : bool
             If true, display the graphs when the function is called. Otherwise the figure is returned. 
 
@@ -74,6 +96,9 @@ class edaDF:
         self.cat = []
         self.num = []
 
+    def stats(self):
+        return self.data.describe().T
+    
     def info(self):
         return self.data.info()
 
@@ -82,6 +107,9 @@ class edaDF:
         
     def setCat(self, catList):
         self.cat = catList
+
+    def setTarget(self, target):
+        self.target = target
     
     def setNum(self, numList):
         self.num = numList
@@ -131,19 +159,25 @@ class edaDF:
         out3 = widgets.Output()
         out4 = widgets.Output()
 
-        tab = widgets.Tab(children = [out1, out2, out3])
+        tab = widgets.Tab(children = [out1, out2, out3, out4])
         tab.set_title(0, 'Info')
-        tab.set_title(1, 'Categorical')
-        tab.set_title(2, 'Numerical')
+        tab.set_title(1, 'Statistics')
+        tab.set_title(2, 'Categorical')
+        tab.set_title(3, 'Numerical')
         display(tab)
 
         with out1:
             self.info()
 
         with out2:
-            fig2 = self.countPlots(splitTarg=True, show=False)
-            plt.show(fig2)
-        
+            print(self.stats())
+
         with out3:
-            fig3 = self.histPlots(kde=True, show=False)
-            plt.show(fig3)
+            if self.cat != []:
+                fig2 = self.countPlots(splitTarg=True, show=False)
+                plt.show(fig2)
+        
+        with out4:
+            if self.num != []:
+                fig3 = self.histPlots(kde=True, show=False)
+                plt.show(fig3)
